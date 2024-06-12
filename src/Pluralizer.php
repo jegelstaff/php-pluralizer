@@ -29,7 +29,7 @@
  * This work is based on the above PHP class made, with an intention of starting with some small changes
  * And add many corrections and enhancements later on.
  * Please feel free to contribute by adding words and/or functionlity to the script, or perhaps suggestions.
- * Author: Rachid Aachich 
+ * Author: Rachid Aachich
  * Email: r.aachich@gmail.com
  */
 
@@ -59,7 +59,7 @@ class Pluralizer
         '/s$/i'                    => "s",
         '/$/'                      => "s"
     );
-    
+
     static $singular = array(
         '/(quiz)zes$/i'             => "$1",
         '/(matr)ices$/i'            => "$1ix",
@@ -82,7 +82,7 @@ class Pluralizer
         '/(li|wi|kni)ves$/i'        => "$1fe",
         '/(shea|loa|lea|thie)ves$/i'=> "$1f",
         '/(^analy)ses$/i'           => "$1sis",
-        '/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/i'  => "$1$2sis",        
+        '/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)ses$/i'  => "$1$2sis",
         '/([ti])a$/i'               => "$1um",
         '/(n)ews$/i'                => "$1ews",
         '/(h|bl)ouses$/i'           => "$1ouse",
@@ -90,7 +90,7 @@ class Pluralizer
         '/(us)es$/i'                => "$1",
         '/s$/i'                     => ""
     );
-    
+
     static $irregular = array(
         'move'          => 'moves',
         'foot'          => 'feet',
@@ -113,43 +113,43 @@ class Pluralizer
         'hippopotamus'  => 'hippopotami',
         'automaton'     => 'automata'
     );
-    
+
     /**
      * All the unchangeable words after pluralization, including uncountable words.
      */
     static $unchangeable = array();
-    
+
     public function __construct()
     {
-        self::$unchangeable = json_decode(@file_get_contents('unchangeable.json'));
+        self::$unchangeable = json_decode(@file_get_contents( __DIR__ . '/unchangeable.json' ));
     }
-    
-    public static function pluralize( $string ) 
+
+    public static function pluralize( $string )
     {
         // save some time in the case that singular and plural are the same
         if ( in_array( strtolower( $string ), self::$unchangeable ) )
             return $string;
-            
-    
+
+
         // check for irregular singular forms
         foreach ( self::$irregular as $pattern => $result )
         {
             $pattern = '/' . $pattern . '$/i';
-            
+
             if ( preg_match( $pattern, $string ) )
                 return preg_replace( $pattern, $result, $string);
         }
-        
+
         // check for matches using regular expressions
         foreach ( self::$plural as $pattern => $result )
         {
             if ( preg_match( $pattern, $string ) )
                 return preg_replace( $pattern, $result, $string );
         }
-        
+
         return $string;
     }
-    
+
     public static function singularize( $string )
     {
         // save some time in the case that singular and plural are the same
@@ -160,21 +160,21 @@ class Pluralizer
         foreach ( self::$irregular as $result => $pattern )
         {
             $pattern = '/' . $pattern . '$/i';
-            
+
             if ( preg_match( $pattern, $string ) )
                 return preg_replace( $pattern, $result, $string);
         }
-        
+
         // check for matches using regular expressions
         foreach ( self::$singular as $pattern => $result )
         {
             if ( preg_match( $pattern, $string ) )
                 return preg_replace( $pattern, $result, $string );
         }
-        
+
         return $string;
     }
-    
+
     public static function pluralize_if($count, $string)
     {
         if ($count == 1)
